@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARCstores - Shop Everything</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {font-family: Arial, sans-serif; margin: 0; background: #f9fafb;}
+    header, footer {background: white; padding: 1em 2em; box-shadow: 0 2px 5px rgba(0,0,0,0.1);} 
+    .logo {font-weight: bold; color: #4f46e5; font-size: 1.3em;}
+    nav a {margin: 0 1em; text-decoration: none; color: #333;}
+    .container {max-width: 1000px; margin: 2em auto; padding: 1em;}
+    .grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1em;}
+    .card {background: white; border-radius: 10px; padding: 1em; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+    .card img {width: 100%; border-radius: 10px;}
+    .btn {background: #4f46e5; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;}
+    .btn:hover {background: #4338ca;}
+    .cart {margin-top: 2em;}
+    .cart-item {display: flex; justify-content: space-between; align-items: center; background: white; padding: 1em; margin-bottom: 1em; border-radius: 10px;}
+    footer {text-align: center; font-size: 0.9em; color: gray; margin-top: 3em;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="flex" style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="logo">ARCstores</div>
+      <nav>
+        <a href="#home">Home</a>
+        <a href="#cart">Cart (<span id="cart-count">0</span>)</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Welcome to ARCstores</h1>
+    <div class="grid" id="product-list"></div>
+
+    <section id="cart-section" class="cart">
+      <h2>Your Cart</h2>
+      <div id="cart-items"></div>
+      <p id="cart-total"></p>
+      <button class="btn" id="checkout-btn">Checkout</button>
+    </section>
+  </main>
+
+  <footer>© <span id="year"></span> ARCstores — Shop Everything</footer>
+
+  <script>
+    const products = [
+      { id: 'p1', title: 'Classic Sneakers', price: 59.99, img: 'https://via.placeholder.com/250?text=Sneakers' },
+      { id: 'p2', title: 'Wireless Headphones', price: 129.5, img: 'https://via.placeholder.com/250?text=Headphones' },
+      { id: 'p3', title: 'Ceramic Mug', price: 12.0, img: 'https://via.placeholder.com/250?text=Mug' },
+      { id: 'p4', title: 'Unisex T-Shirt', price: 19.99, img: 'https://via.placeholder.com/250?text=T-Shirt' }
+    ];
+
+    let cart = [];
+
+    function renderProducts() {
+      const list = document.getElementById('product-list');
+      list.innerHTML = products.map(p => `
+        <div class='card'>
+          <img src="${p.img}" alt="${p.title}">
+          <h3>${p.title}</h3>
+          <p>₹${p.price.toFixed(2)}</p>
+          <button class='btn' onclick='addToCart("${p.id}")'>Add to Cart</button>
+        </div>
+      `).join('');
+    }
+
+    function addToCart(id) {
+      const prod = products.find(p => p.id === id);
+      const found = cart.find(i => i.id === id);
+      if (found) found.qty++;
+      else cart.push({...prod, qty: 1});
+      renderCart();
+    }
+
+    function renderCart() {
+      const items = document.getElementById('cart-items');
+      const total = document.getElementById('cart-total');
+      const count = document.getElementById('cart-count');
+      if (cart.length === 0) {
+        items.innerHTML = '<p>Your cart is empty.</p>';
+        total.textContent = '';
+      } else {
+        items.innerHTML = cart.map(i => `
+          <div class='cart-item'>
+            <span>${i.title} (x${i.qty})</span>
+            <span>₹${(i.price * i.qty).toFixed(2)}</span>
+          </div>
+        `).join('');
+        const sum = cart.reduce((s, i) => s + i.price * i.qty, 0);
+        total.textContent = 'Total: ₹' + sum.toFixed(2);
+      }
+      count.textContent = cart.reduce((s, i) => s + i.qty, 0);
+    }
+
+    document.getElementById('checkout-btn').addEventListener('click', () => {
+      if (cart.length === 0) return alert('Cart is empty!');
+      alert('Payment simulated! Thank you for shopping at ARCstores.');
+      cart = [];
+      renderCart();
+    });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+</html>
